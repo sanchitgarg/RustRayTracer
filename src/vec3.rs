@@ -2,7 +2,7 @@
 
 use std::ops;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Vec3 {
     pub e: [f32; 3],
 }
@@ -117,6 +117,14 @@ impl ops::Mul<f32> for Vec3 {
     }
 }
 
+impl ops::Mul<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        rhs * self
+    }
+}
+
 impl ops::Div<f32> for Vec3 {
     type Output = Self;
 
@@ -160,6 +168,7 @@ mod tests {
         let t: f32 = 2.0;
         let v2: Vec3 = Vec3::new(2f32, 4f32, 6f32);
         assert_eq!(v1 * t, v2);
+        assert_eq!(t * v1, v2);
     }
 
     #[test]

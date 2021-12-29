@@ -1,55 +1,72 @@
 mod vec3;
 mod ray;
 mod utils;
+mod hittable;
+mod sphere;
+mod hittable_list;
 
 use vec3::Vec3;
 use ray::Ray;
 use utils::Utils;
+use hittable::*;
+use sphere::Sphere;
+use hittable_list::HittableList;
 
-fn color(r: &Ray) -> Vec3 {
-    let unit_direction: Vec3 = Utils::unit_direction(r.direction());
+fn color(r: &Ray, world: &dyn Hittable) -> Vec3 {
+    let mut rec: HitRecord = HitRecord::default();
+    if world.hit(r, 0.0, Utils::infinity(), &mut rec) {
+        return 0.5 * (rec.normal + Vec3::new(1.0, 1.0, 1.0));
+    }
+
+    let unit_direction: Vec3 = Utils::unit_vector(r.direction());
     let t: f32 = 0.5 * (unit_direction.y() + 1.0);
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
 }
 
 fn main()
 {
+    // Image
     let debug: bool = false;
 
-    let mut nx : u32 = 800;
-    let mut ny : u32 = 400;
+    let mut aspect_ratio : f32 = 16.0 / 9.0;
+    let mut image_witdh : u32 = 200;
 
-    if debug {
-        nx = 200;
-        ny = 100;
+    if !debug {
+        image_witdh = 400;
     }
 
-    let max_value : u32 = 255;
+    let image_heigth : u32 = (image_witdh as f32 / aspect_ratio) as u32;
 
-    println!("P3\n{} {}\n{}", nx, ny, max_value);
+    // World
+    let mut world: HittableList = HittableList::default();
+    world.add(Box::new(Sphere::sphere(Vec3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::sphere(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
-    let lower_left_corner : Vec3 = Vec3::new(-2.0, -1.0, -1.0);
-    let horizontal : Vec3 = Vec3::new(4.0, 0.0, 0.0);
-    let vertical : Vec3 = Vec3::new(0.0, 2.0, 0.0);
+    // Camera
+    let viewport_height: f32 = 2.0;
+    let viewport_width: f32 = aspect_ratio * viewport_height;
+    let focal_length: f32 = 1.0;
     let origin : Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    let horizontal : Vec3 = Vec3::new(viewport_width, 0.0, 0.0);
+    let vertical : Vec3 = Vec3::new(0.0, viewport_height, 0.0);
+    let lower_left_corner : Vec3 = origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
 
-    for j in (0..ny).rev() {
+    // Render
+    println!("P3\n{} {}\n{}", image_witdh, image_heigth, 255);
+
+    for j in (0..image_heigth).rev() {
         if j % 10 == 0 {
             eprintln!("\rScanlines remaining: {}", j);
         }
 
-        for i in 0..nx {
-            let u: f32 = i as f32 / nx as f32;
-            let v: f32 = j as f32 / ny as f32;
+        for i in 0..image_witdh {
+            let u: f32 = i as f32 / image_witdh as f32;
+            let v: f32 = j as f32 / image_heigth as f32;
 
             let r : Ray = Ray::ray(origin, lower_left_corner + horizontal * u + vertical * v);
-            let col: Vec3 = color(&r);
+            let col: Vec3 = color(&r, &world);
 
-            let ir: u32 = (255.999 * col.r()) as u32;
-            let ig: u32 = (255.999 * col.g()) as u32;
-            let ib: u32 = (255.999 * col.b()) as u32;
-
-            println!("{} {} {}", ir, ig, ib);
+            Utils::write_color(col);
         }
     }
 

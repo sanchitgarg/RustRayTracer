@@ -5,7 +5,7 @@ pub struct Utils {
 }
 
 impl Utils {
-    pub fn unit_direction(v: Vec3) -> Vec3 {
+    pub fn unit_vector(v: Vec3) -> Vec3 {
         v / v.length()
     }
 
@@ -15,6 +15,27 @@ impl Utils {
 
     pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
         v1.dot(v2)
+    }
+
+    pub fn write_color(pixel_color: Vec3) {
+        // Write the translated [0,255] value of each color component.
+        let ir: u32 = (255.999 * pixel_color.r()) as u32;
+        let ig: u32 = (255.999 * pixel_color.g()) as u32;
+        let ib: u32 = (255.999 * pixel_color.b()) as u32;
+
+        println!("{} {} {}", ir, ig, ib);
+    }
+
+    pub fn infinity() -> f32 {
+        std::f32::MAX
+    }
+
+    pub fn pi() -> f32 {
+        3.1415926535897932385
+    }
+
+    pub fn degree_to_radians(degree: f32) -> f32 {
+        degree * Utils::pi() / 180.0
     }
 }
 
@@ -26,7 +47,7 @@ mod tests {
     #[test]
     fn test_utils_unit_direction() {
         let v : Vec3 = Vec3::new(4.0, 0.0, 0.0);
-        assert_eq!(Utils::unit_direction(v), Vec3::new(1.0,0.0, 0.0))
+        assert_eq!(Utils::unit_vector(v), Vec3::new(1.0,0.0, 0.0))
     }
 
     #[test]
