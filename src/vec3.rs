@@ -4,27 +4,27 @@ use std::ops;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Vec3 {
-    pub e: [f32; 3],
+    pub e: [f64; 3],
 }
 
 impl Vec3 {
     // Constructor
-    pub fn new(x: f32, y: f32, z: f32) -> Vec3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         Vec3 {
             e : [x, y, z]
         }
     }
 
     // Getters
-    pub fn x(self) -> f32 { self.e[0] }
-    pub fn y(self) -> f32 { self.e[1] }
-    pub fn z(self) -> f32 { self.e[2] }
-    pub fn r(self) -> f32 { self.e[0] }
-    pub fn g(self) -> f32 { self.e[1] }
-    pub fn b(self) -> f32 { self.e[2] }
+    pub fn x(self) -> f64 { self.e[0] }
+    pub fn y(self) -> f64 { self.e[1] }
+    pub fn z(self) -> f64 { self.e[2] }
+    pub fn r(self) -> f64 { self.e[0] }
+    pub fn g(self) -> f64 { self.e[1] }
+    pub fn b(self) -> f64 { self.e[2] }
 
     // Math functions
-    pub fn dot(self, rhs: Self) -> f32 {
+    pub fn dot(self, rhs: Self) -> f64 {
         {
             self.e[0] * rhs.e[0] +
             self.e[1] * rhs.e[1] +
@@ -42,11 +42,11 @@ impl Vec3 {
         }
     }
 
-    pub fn length_squared(self) -> f32 {
+    pub fn length_squared(self) -> f64 {
         self.dot(self)
     }
 
-    pub fn length(self) -> f32 {
+    pub fn length(self) -> f64 {
         self.length_squared().sqrt()
     }
 }
@@ -107,17 +107,17 @@ impl ops::Neg for Vec3 {
     }
 }
 
-impl ops::Mul<f32> for Vec3 {
+impl ops::Mul<f64> for Vec3 {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Self::Output {
+    fn mul(self, rhs: f64) -> Self::Output {
         Self {
             e: [self.e[0] * rhs, self.e[1] * rhs, self.e[2] * rhs]
         }
     }
 }
 
-impl ops::Mul<Vec3> for f32 {
+impl ops::Mul<Vec3> for f64 {
     type Output = Vec3;
 
     fn mul(self, rhs: Vec3) -> Self::Output {
@@ -125,10 +125,10 @@ impl ops::Mul<Vec3> for f32 {
     }
 }
 
-impl ops::Div<f32> for Vec3 {
+impl ops::Div<f64> for Vec3 {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Self::Output {
+    fn div(self, rhs: f64) -> Self::Output {
         Self {
             e: [self.e[0] / rhs, self.e[1] / rhs, self.e[2] / rhs]
         }
@@ -141,32 +141,32 @@ mod tests {
 
     #[test]
     fn test_vec3_add() {
-        let v1: Vec3 = Vec3::new(1f32, 2f32, 3f32);
-        let v2: Vec3 = Vec3::new(2f32, 4f32, 6f32);
-        let v3: Vec3 = Vec3::new(3f32, 6f32, 9f32);
+        let v1: Vec3 = Vec3::new(1f64, 2f64, 3f64);
+        let v2: Vec3 = Vec3::new(2f64, 4f64, 6f64);
+        let v3: Vec3 = Vec3::new(3f64, 6f64, 9f64);
         assert_eq!(v1 + v2, v3);
     }
 
     #[test]
     fn test_vec3_sub() {
-        let v1: Vec3 = Vec3::new(1f32, 2f32, 3f32);
-        let v2: Vec3 = Vec3::new(2f32, 4f32, 6f32);
-        let v3: Vec3 = Vec3::new(-1f32, -2f32, -3f32);
+        let v1: Vec3 = Vec3::new(1f64, 2f64, 3f64);
+        let v2: Vec3 = Vec3::new(2f64, 4f64, 6f64);
+        let v3: Vec3 = Vec3::new(-1f64, -2f64, -3f64);
         assert_eq!(v1 - v2, v3);
     }
 
     #[test]
     fn test_vec3_neg() {
-        let v1: Vec3 = Vec3::new(1f32, 2f32, 3f32);
-        let v2: Vec3 = Vec3::new(-1f32, -2f32, -3f32);
+        let v1: Vec3 = Vec3::new(1f64, 2f64, 3f64);
+        let v2: Vec3 = Vec3::new(-1f64, -2f64, -3f64);
         assert_eq!(-v1, v2);
     }
 
     #[test]
     fn test_vec3_mul() {
-        let v1: Vec3 = Vec3::new(1f32, 2f32, 3f32);
-        let t: f32 = 2.0;
-        let v2: Vec3 = Vec3::new(2f32, 4f32, 6f32);
+        let v1: Vec3 = Vec3::new(1f64, 2f64, 3f64);
+        let t: f64 = 2.0;
+        let v2: Vec3 = Vec3::new(2f64, 4f64, 6f64);
         assert_eq!(v1 * t, v2);
         assert_eq!(t * v1, v2);
     }
@@ -174,7 +174,7 @@ mod tests {
     #[test]
     fn test_vec3_div() {
         let v1: Vec3 = Vec3::new(1.0, 2.0, 3.0);
-        let t: f32 = 2.0;
+        let t: f64 = 2.0;
         let v2: Vec3 = Vec3::new(0.5, 1.0, 1.5);
         assert_eq!(v1 / t, v2);
     }
@@ -201,7 +201,7 @@ mod tests {
 
     #[test]
     fn test_vec3_length() {
-        let v1: Vec3 = Vec3::new(0f32, 4f32, 3f32);
+        let v1: Vec3 = Vec3::new(0f64, 4f64, 3f64);
         assert_eq!(v1.length(), 5.0);
     }
 }

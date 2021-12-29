@@ -1,4 +1,5 @@
 use crate::vec3::Vec3;
+// use rand::Rng;
 
 pub struct Utils {
 
@@ -13,7 +14,7 @@ impl Utils {
         v1.cross(v2)
     }
 
-    pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
+    pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
         v1.dot(v2)
     }
 
@@ -26,16 +27,20 @@ impl Utils {
         println!("{} {} {}", ir, ig, ib);
     }
 
-    pub fn infinity() -> f32 {
-        std::f32::MAX
+    pub fn infinity() -> f64 {
+        std::f64::MAX
     }
 
-    pub fn pi() -> f32 {
+    pub fn pi() -> f64 {
         3.1415926535897932385
     }
 
-    pub fn degree_to_radians(degree: f32) -> f32 {
+    pub fn degree_to_radians(degree: f64) -> f64 {
         degree * Utils::pi() / 180.0
+    }
+
+    pub fn random_double() -> f64 {
+        0.0
     }
 }
 

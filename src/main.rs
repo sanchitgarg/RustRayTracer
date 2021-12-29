@@ -19,7 +19,7 @@ fn color(r: &Ray, world: &dyn Hittable) -> Vec3 {
     }
 
     let unit_direction: Vec3 = Utils::unit_vector(r.direction());
-    let t: f32 = 0.5 * (unit_direction.y() + 1.0);
+    let t: f64 = 0.5 * (unit_direction.y() + 1.0);
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
 }
 
@@ -28,14 +28,14 @@ fn main()
     // Image
     let debug: bool = false;
 
-    let mut aspect_ratio : f32 = 16.0 / 9.0;
+    let aspect_ratio : f64 = 16.0 / 9.0;
     let mut image_witdh : u32 = 200;
 
     if !debug {
         image_witdh = 400;
     }
 
-    let image_heigth : u32 = (image_witdh as f32 / aspect_ratio) as u32;
+    let image_heigth : u32 = (image_witdh as f64 / aspect_ratio) as u32;
 
     // World
     let mut world: HittableList = HittableList::default();
@@ -43,9 +43,9 @@ fn main()
     world.add(Box::new(Sphere::sphere(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
-    let viewport_height: f32 = 2.0;
-    let viewport_width: f32 = aspect_ratio * viewport_height;
-    let focal_length: f32 = 1.0;
+    let viewport_height: f64 = 2.0;
+    let viewport_width: f64 = aspect_ratio * viewport_height;
+    let focal_length: f64 = 1.0;
     let origin : Vec3 = Vec3::new(0.0, 0.0, 0.0);
     let horizontal : Vec3 = Vec3::new(viewport_width, 0.0, 0.0);
     let vertical : Vec3 = Vec3::new(0.0, viewport_height, 0.0);
@@ -60,8 +60,8 @@ fn main()
         }
 
         for i in 0..image_witdh {
-            let u: f32 = i as f32 / image_witdh as f32;
-            let v: f32 = j as f32 / image_heigth as f32;
+            let u: f64 = i as f64 / image_witdh as f64;
+            let v: f64 = j as f64 / image_heigth as f64;
 
             let r : Ray = Ray::ray(origin, lower_left_corner + horizontal * u + vertical * v);
             let col: Vec3 = color(&r, &world);
