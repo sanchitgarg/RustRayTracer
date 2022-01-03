@@ -14,17 +14,22 @@ impl Vec3 {
             e : [x, y, z]
         }
     }
+    pub fn zero() -> Vec3 {
+        Vec3 {
+            e : [0.0, 0.0, 0.0]
+        }
+    }
 
     // Getters
-    pub fn x(self) -> f64 { self.e[0] }
-    pub fn y(self) -> f64 { self.e[1] }
-    pub fn z(self) -> f64 { self.e[2] }
-    pub fn r(self) -> f64 { self.e[0] }
-    pub fn g(self) -> f64 { self.e[1] }
-    pub fn b(self) -> f64 { self.e[2] }
+    pub fn x(&self) -> f64 { self.e[0] }
+    pub fn y(&self) -> f64 { self.e[1] }
+    pub fn z(&self) -> f64 { self.e[2] }
+    pub fn r(&self) -> f64 { self.e[0] }
+    pub fn g(&self) -> f64 { self.e[1] }
+    pub fn b(&self) -> f64 { self.e[2] }
 
     // Math functions
-    pub fn dot(self, rhs: Self) -> f64 {
+    pub fn dot(&self, rhs: &Self) -> f64 {
         {
             self.e[0] * rhs.e[0] +
             self.e[1] * rhs.e[1] +
@@ -32,7 +37,7 @@ impl Vec3 {
         }
     }
 
-    pub fn cross(self, rhs: Self) -> Vec3 {
+    pub fn cross(&self, rhs: &Self) -> Vec3 {
         Vec3 {
             e:[
                 self.e[1] * rhs.e[2] + self.e[2] * rhs.e[1],
@@ -42,11 +47,11 @@ impl Vec3 {
         }
     }
 
-    pub fn length_squared(self) -> f64 {
+    pub fn length_squared(&self) -> f64 {
         self.dot(self)
     }
 
-    pub fn length(self) -> f64 {
+    pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 }
@@ -125,6 +130,16 @@ impl ops::Mul<Vec3> for f64 {
     }
 }
 
+impl ops::MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, _rhs: f64) {
+        *self = Self {
+                    e: [self.e[0] * _rhs,
+                        self.e[1] * _rhs,
+                        self.e[2] * _rhs]
+        }
+    }
+}
+
 impl ops::Div<f64> for Vec3 {
     type Output = Self;
 
@@ -172,6 +187,15 @@ mod tests {
     }
 
     #[test]
+    fn test_vec3_mul_assign() {
+        let mut v1: Vec3 = Vec3::new(1f64, 2f64, 3f64);
+        let t: f64 = -2.0;
+        let v2: Vec3 = Vec3::new(-2f64, -4f64, -6f64);
+        v1 *= t;
+        assert_eq!(v1, v2);
+    }
+
+    #[test]
     fn test_vec3_div() {
         let v1: Vec3 = Vec3::new(1.0, 2.0, 3.0);
         let t: f64 = 2.0;
@@ -183,14 +207,14 @@ mod tests {
     fn test_vec3_dot() {
         let v1: Vec3 = Vec3::new(1.0, 2.0, 3.0);
         let v2: Vec3 = Vec3::new(1.0, 1.0, 1.0);
-        assert_eq!(v1.dot(v2), 6.0);
+        assert_eq!(v1.dot(&v2), 6.0);
     }
 
     #[test]
     fn test_vec3_cross() {
         let v1: Vec3 = Vec3::new(1.0, 0.0, 0.0);
         let v2: Vec3 = Vec3::new(0.0, 1.0, 0.0);
-        assert_eq!(v1.cross(v2), Vec3::new(0.0, 0.0, 1.0));
+        assert_eq!(v1.cross(&v2), Vec3::new(0.0, 0.0, 1.0));
     }
 
     #[test]

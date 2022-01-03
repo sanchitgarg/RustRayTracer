@@ -18,7 +18,7 @@ impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let oc: Vec3 = r.origin() - self.center;
         let a: f64 = r.direction().length_squared();
-        let half_b: f64 = Utils::dot(oc, r.direction());
+        let half_b: f64 = Utils::dot(&oc, &r.direction());
         let c: f64 = oc.length_squared() - self.radius * self.radius;
 
         let discriminant: f64 = half_b * half_b - a * c;
@@ -43,7 +43,7 @@ impl Hittable for Sphere {
         rec.t = root;
         rec.p = r.point_at_parameter(rec.t);
         let outward_normal: Vec3 = (rec.p - self.center) / self.radius;
-        rec.set_face_normal(r, outward_normal);
+        rec.set_face_normal(r, &outward_normal);
 
         return true;
     }

@@ -30,8 +30,8 @@ mod tests {
 
     #[test]
     fn test_ray_origin() {
-        let ray: Ray = Ray::ray(Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
-        assert_eq!(ray.origin(), Vec3::new(0.0, 0.0, 0.0));
+        let ray: Ray = Ray::ray(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0));
+        assert_eq!(ray.origin(), Vec3::zero());
     }
 
     #[test]
