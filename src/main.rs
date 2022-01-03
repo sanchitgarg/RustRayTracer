@@ -4,6 +4,7 @@ mod utils;
 mod hittable;
 mod sphere;
 mod hittable_list;
+mod camera;
 
 use vec3::Vec3;
 use ray::Ray;
@@ -11,6 +12,7 @@ use utils::Utils;
 use hittable::*;
 use sphere::Sphere;
 use hittable_list::HittableList;
+use camera::Camera;
 
 fn color(r: &Ray, world: &dyn Hittable) -> Vec3 {
     let mut rec: HitRecord = HitRecord::default();
@@ -23,16 +25,17 @@ fn color(r: &Ray, world: &dyn Hittable) -> Vec3 {
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
 }
 
-fn main()
-{
+fn main() {
     // Image
     let debug: bool = false;
 
     let aspect_ratio : f64 = 16.0 / 9.0;
     let mut image_witdh : u32 = 200;
+    let mut samples_per_pixel : u32 = 10;
 
     if !debug {
         image_witdh = 400;
+        samples_per_pixel = 100;
     }
 
     let image_heigth : u32 = (image_witdh as f64 / aspect_ratio) as u32;
@@ -43,13 +46,7 @@ fn main()
     world.add(Box::new(Sphere::sphere(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
-    let viewport_height: f64 = 2.0;
-    let viewport_width: f64 = aspect_ratio * viewport_height;
-    let focal_length: f64 = 1.0;
-    let origin : Vec3 = Vec3::new(0.0, 0.0, 0.0);
-    let horizontal : Vec3 = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical : Vec3 = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner : Vec3 = origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
+    let cam: Camera = Camera::camera();
 
     // Render
     println!("P3\n{} {}\n{}", image_witdh, image_heigth, 255);
@@ -60,13 +57,19 @@ fn main()
         }
 
         for i in 0..image_witdh {
-            let u: f64 = i as f64 / image_witdh as f64;
-            let v: f64 = j as f64 / image_heigth as f64;
+            let mut pixel_color = Vec3::new(0.0,0.0,0.0);
 
-            let r : Ray = Ray::ray(origin, lower_left_corner + horizontal * u + vertical * v);
-            let col: Vec3 = color(&r, &world);
+            for s in 0..samples_per_pixel {
+                let u: f64 =
+                    (i as f64 + Utils::random_double()) / image_witdh as f64;
+                let v: f64 =
+                    (j as f64 + Utils::random_double()) / image_heigth as f64;
 
-            Utils::write_color(col);
+                let r : Ray = cam.get_ray(u, v);
+                pixel_color += color(&r, &world);
+            }
+
+            Utils::write_color(pixel_color, samples_per_pixel);
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::vec3::Vec3;
-// use rand::Rng;
+use rand::*;
 
 pub struct Utils {
 
@@ -18,13 +18,33 @@ impl Utils {
         v1.dot(v2)
     }
 
-    pub fn write_color(pixel_color: Vec3) {
+    pub fn write_color(pixel_color: Vec3, samples_per_pixel: u32) {
         // Write the translated [0,255] value of each color component.
-        let ir: u32 = (255.999 * pixel_color.r()) as u32;
-        let ig: u32 = (255.999 * pixel_color.g()) as u32;
-        let ib: u32 = (255.999 * pixel_color.b()) as u32;
+        let mut r: f64 = pixel_color.r();
+        let mut g: f64 = pixel_color.g();
+        let mut b: f64 = pixel_color.b();
+
+        let scale: f64 = 1f64 / samples_per_pixel as f64;
+
+        r *= scale;
+        g *= scale;
+        b *= scale;
+
+        let ir: u32 = (255.999 * Utils::clamp(r, 0.0, 0.999)) as u32;
+        let ig: u32 = (255.999 * Utils::clamp(g, 0.0, 0.999)) as u32;
+        let ib: u32 = (255.999 * Utils::clamp(b, 0.0, 0.999)) as u32;
 
         println!("{} {} {}", ir, ig, ib);
+    }
+
+    pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
+        if x < min {
+            return min;
+        } else if x > max {
+            return max;
+        }
+
+        x
     }
 
     pub fn infinity() -> f64 {
@@ -40,7 +60,12 @@ impl Utils {
     }
 
     pub fn random_double() -> f64 {
-        0.0
+        let mut rng = rand::thread_rng();
+        rng.gen()
+    }
+
+    pub fn random_double_min_max(min: f64, max: f64) -> f64 {
+        min + (max - min) * Utils::random_double()
     }
 }
 
