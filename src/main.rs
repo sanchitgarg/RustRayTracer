@@ -5,6 +5,7 @@ mod hittable;
 mod sphere;
 mod hittable_list;
 mod camera;
+mod material;
 
 use vec3::Vec3;
 use ray::Ray;
@@ -13,18 +14,28 @@ use hittable::*;
 use sphere::Sphere;
 use hittable_list::HittableList;
 use camera::Camera;
+use material::*;
 
 fn ray_color(r: &Ray, world: &dyn Hittable, depth: u32) -> Vec3 {
     if depth <= 0 {
         return Vec3::zero();
     }
 
+    // Object intersection
     let mut rec: HitRecord = HitRecord::default();
+
     if world.hit(r, 0.001, Utils::infinity(), &mut rec) {
-        let target: Vec3 = rec.p + rec.normal + Utils::random_unit_vector();
-        return 0.5 * ray_color(&Ray::ray(rec.p, target - rec.p), world, depth - 1);
+        let mut scattered: Ray = Ray::default();
+        let mut attenuation: Vec3 = Vec3::zero();
+
+        if rec.mat_ptr.scatter(r, &rec, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
+
+        return Vec3::zero();
     }
 
+    // Environment
     let unit_direction: Vec3 = Utils::unit_vector(&r.direction());
     let t: f64 = 0.5 * (unit_direction.y() + 1.0);
     Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
@@ -43,7 +54,7 @@ fn main() {
 
     // final render configs (not debug)
     if !debug {
-        image_witdh = 400;
+        image_witdh = 800;
         samples_per_pixel = 100;
         max_depth = 10;
     }
@@ -51,9 +62,40 @@ fn main() {
     let image_heigth : u32 = (image_witdh as f64 / aspect_ratio) as u32;
 
     // World
+    let material_ground: Box<Material>
+        = Box::new(
+            Material::Lambertian{
+                lambertian: LambertianMaterial::lambertian(Vec3::new(0.8, 0.8, 0.0))});
+    let material_center: Box<Material>
+        = Box::new(
+            Material::Lambertian{
+                lambertian: LambertianMaterial::lambertian(Vec3::new(0.7, 0.3, 0.3))});
+    let material_left: Box<Material>
+        = Box::new(
+            Material::Metal{
+                metal: MetalMaterial::metal(Vec3::new(0.8, 0.8, 0.8))});
+    let material_right: Box<Material>
+        = Box::new(
+            Material::Metal{
+                metal: MetalMaterial::metal(Vec3::new(0.8, 0.6, 0.2))});
+
     let mut world: HittableList = HittableList::default();
-    world.add(Box::new(Sphere::sphere(Vec3::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Box::new(Sphere::sphere(Vec3::new(0.0, -100.5, -1.0), 100.0)));
+    world.add(
+        Box::new(
+            Sphere::sphere(
+                Vec3::new(0.0, -100.5, -1.0), 100.0, material_ground)));
+    world.add(
+        Box::new(
+            Sphere::sphere(
+                Vec3::new(0.0, 0.0, -1.0), 0.5, material_center)));
+    world.add(
+        Box::new(
+            Sphere::sphere(
+                Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left)));
+    world.add(
+        Box::new(
+            Sphere::sphere(
+                Vec3::new(1.0, 0.0, -1.0), 0.5, material_right)));
 
     // Camera
     let cam: Camera = Camera::camera();

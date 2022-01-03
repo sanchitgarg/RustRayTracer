@@ -89,9 +89,16 @@ impl Utils {
                 return p;
             }
         }
+    }
 
-        // unreachable code
-        Utils::random_vec3()
+    pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+        let in_unit_normal: Vec3 = Utils::random_in_unit_shpere();
+
+        if Utils::dot(&in_unit_normal, normal) > 0.0 {
+            return in_unit_normal;
+        }
+
+        -in_unit_normal
     }
 
     pub fn random_unit_vector() -> Vec3 {

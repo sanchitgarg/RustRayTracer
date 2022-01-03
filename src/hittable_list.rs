@@ -33,6 +33,7 @@ impl Hittable for HittableList {
                 rec.p = temp_rec.p;
                 rec.normal = temp_rec.normal;
                 rec.front_face = temp_rec.front_face;
+                rec.mat_ptr = temp_rec.mat_ptr.clone();
             }
         }
 

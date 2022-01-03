@@ -10,14 +10,10 @@ pub struct Vec3 {
 impl Vec3 {
     // Constructor
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
-        Vec3 {
-            e : [x, y, z]
-        }
+        Vec3 { e : [x, y, z] }
     }
     pub fn zero() -> Vec3 {
-        Vec3 {
-            e : [0.0, 0.0, 0.0]
-        }
+        Vec3 { e : [0.0, 0.0, 0.0] }
     }
 
     // Getters
@@ -53,6 +49,15 @@ impl Vec3 {
 
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s: f64 = 0.00000001_f64;
+        self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
+    }
+
+    pub fn reflect(&self, n: Vec3) -> Vec3 {
+        *self - 2.0_f64 * self.dot(&n) * n
     }
 }
 
@@ -122,6 +127,16 @@ impl ops::Mul<f64> for Vec3 {
     }
 }
 
+impl ops::Mul<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Self {
+            e: [self.e[0] * rhs.e[0], self.e[1] * rhs.e[1], self.e[2] * rhs.e[2]]
+        }
+    }
+}
+
 impl ops::Mul<Vec3> for f64 {
     type Output = Vec3;
 
@@ -184,6 +199,9 @@ mod tests {
         let v2: Vec3 = Vec3::new(2f64, 4f64, 6f64);
         assert_eq!(v1 * t, v2);
         assert_eq!(t * v1, v2);
+
+        let v3: Vec3 = Vec3::new(2f64, 8f64, 18f64);
+        assert_eq!(v1 * v2, v3);
     }
 
     #[test]
