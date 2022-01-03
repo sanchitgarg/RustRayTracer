@@ -54,7 +54,7 @@ fn main() {
 
     // final render configs (not debug)
     if !debug {
-        image_witdh = 800;
+        image_witdh = 400;
         samples_per_pixel = 100;
         max_depth = 10;
     }
@@ -69,15 +69,19 @@ fn main() {
     let material_center: Box<Material>
         = Box::new(
             Material::Lambertian{
-                lambertian: LambertianMaterial::lambertian(Vec3::new(0.7, 0.3, 0.3))});
+                lambertian: LambertianMaterial::lambertian(Vec3::new(0.1, 0.2, 0.5))});
     let material_left: Box<Material>
         = Box::new(
-            Material::Metal{
-                metal: MetalMaterial::metal(Vec3::new(0.8, 0.8, 0.8))});
+            Material::Dielectric{
+                dielectric: DielectricMaterial::dielectric(1.5)});
+    let material_left_2: Box<Material>
+        = Box::new(
+            Material::Dielectric{
+                dielectric: DielectricMaterial::dielectric(1.5)});
     let material_right: Box<Material>
         = Box::new(
             Material::Metal{
-                metal: MetalMaterial::metal(Vec3::new(0.8, 0.6, 0.2))});
+                metal: MetalMaterial::metal(Vec3::new(0.8, 0.6, 0.2), 1.0)});
 
     let mut world: HittableList = HittableList::default();
     world.add(
@@ -88,10 +92,14 @@ fn main() {
         Box::new(
             Sphere::sphere(
                 Vec3::new(0.0, 0.0, -1.0), 0.5, material_center)));
+    // world.add(
+    //     Box::new(
+    //         Sphere::sphere(
+    //             Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left)));
     world.add(
         Box::new(
             Sphere::sphere(
-                Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left)));
+                Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left_2)));
     world.add(
         Box::new(
             Sphere::sphere(

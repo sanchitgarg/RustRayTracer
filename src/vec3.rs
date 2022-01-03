@@ -1,5 +1,6 @@
 // vec 3 class
 
+use crate::utils::Utils;
 use std::ops;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
@@ -14,6 +15,9 @@ impl Vec3 {
     }
     pub fn zero() -> Vec3 {
         Vec3 { e : [0.0, 0.0, 0.0] }
+    }
+    pub fn one() -> Vec3 {
+        Vec3 { e : [1.0, 1.0, 1.0] }
     }
 
     // Getters
@@ -58,6 +62,13 @@ impl Vec3 {
 
     pub fn reflect(&self, n: Vec3) -> Vec3 {
         *self - 2.0_f64 * self.dot(&n) * n
+    }
+
+    pub fn refract(&self, n: Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta: f64 = Utils::dot(&-*self, &n).min(1.0_f64);
+        let r_out_perp: Vec3 = etai_over_etat * (*self + cos_theta * n);
+        let r_out_parallel: Vec3 = -((1.0_f64 - r_out_perp.length_squared()).abs()).sqrt() * n;
+        r_out_perp + r_out_parallel
     }
 }
 
