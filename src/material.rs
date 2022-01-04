@@ -79,7 +79,7 @@ impl DielectricMaterial {
         // Use Schlick's approximation for reflectance.
         let mut r0: f64 = (1.0_f64 - ref_idx) / (1.0_f64 + ref_idx);
         r0 = r0*r0;
-        r0 + (1.0_f64 - r0) * (1.0_f64 - cosine).powi(5)
+        r0 + (1.0_f64 - r0) * (1.0_f64 - cosine).powf(5.0_f64)
     }
 }
 impl Scatter for DielectricMaterial {
@@ -96,7 +96,7 @@ impl Scatter for DielectricMaterial {
         let sin_theta: f64 = (1.0_f64 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract: bool = refraction_ratio * sin_theta > 1.0_f64;
-        let mut direction: Vec3 = Vec3::zero();
+        let direction: Vec3;// = Vec3::zero();
 
         if cannot_refract || DielectricMaterial::refractance(cos_theta, refraction_ratio) > Utils::random_double() {
             direction = unit_direction.reflect(rec.normal);

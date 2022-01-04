@@ -52,11 +52,11 @@ impl Utils {
     }
 
     pub fn pi() -> f64 {
-        3.1415926535897932385
+        std::f64::consts::PI
     }
 
     pub fn degree_to_radians(degree: f64) -> f64 {
-        degree * Utils::pi() / 180.0
+        degree * std::f64::consts::PI / 180.0_f64
     }
 
     pub fn random_double() -> f64 {
@@ -103,6 +103,18 @@ impl Utils {
 
     pub fn random_unit_vector() -> Vec3 {
         Utils::unit_vector(&Utils::random_in_unit_shpere())
+    }
+
+    pub fn random_in_unit_disk() -> Vec3 {
+        loop {
+            let p: Vec3 = Vec3::new(
+                Utils::random_double_min_max(-1.0_f64, 1.0_f64),
+                Utils::random_double_min_max(-1.0_f64, 1.0_f64),
+                0.0_f64);
+            if p.length_squared() < 1f64 {
+                return p;
+            }
+        }
     }
 }
 
